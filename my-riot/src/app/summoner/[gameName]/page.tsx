@@ -1,3 +1,4 @@
+//app/summoner/[gameName]
 "use client"; // ✅ 클라이언트 컴포넌트 설정
 import { useEffect, useState, use } from "react";
 import SummonerPage from "@/info/components/SummonerPage";

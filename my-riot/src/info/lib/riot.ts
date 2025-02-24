@@ -25,8 +25,44 @@ export interface LeagueEntry {
   losses: number;
 }
 
+export interface TeamData {
+  teamId: number;
+  bans: { championId: number; pickTurn: number }[];
+  win: boolean;
+  objectives: {
+    champion: { first: boolean; kills: number };
+    baron: { first: boolean; kills: number };
+    dragon: { first: boolean; kills: number };
+    tower: { first: boolean; kills: number };
+  };
+}
+
+export interface ParticipantData {
+  summonerName: string;
+  puuid: string;
+  teamId: number;
+  championId: number;
+  championName: string;
+  summonerSpells: number[]; // 소환사 주문
+  kda: {
+    kills: number;
+    deaths: number;
+    assists: number;
+  };
+  goldEarned: number;
+  win: boolean;
+  totalMinionsKilled: number;
+}
+
+export interface MatchDetails {
+  matchId: string;
+  teams: TeamData[];
+  participants: ParticipantData[];
+}
+
 export interface FullSummonerData extends SummonerData {
   leagueEntries: LeagueEntry[] | null;
+  matchId: string[] | null;
 }
 
 export async function fetchPuuid(
@@ -151,6 +187,98 @@ export async function fetchLeagueData(
   }
 }
 
+export async function fetchMatchId(puuid: string): Promise<string[] | null> {
+  const apiKey = process.env.RIOT_API_KEY;
+  const region = "asia";
+  console.log(apiKey);
+
+  if (!apiKey) {
+    console.error("Riot API Key가 설정되지 않았습니다.");
+    return null;
+  }
+
+  const matchIdUrl = `https://${region}.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=10`;
+
+  try {
+    const res = await fetch(matchIdUrl, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36",
+        "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+        "Accept-Charset": "application/x-www-form-urlencoded; charset=UTF-8",
+        Origin: "https://developer.riotgames.com",
+        "X-Riot-Token": apiKey,
+      },
+    });
+
+    if (!res.ok) {
+      console.error("❌ Riot API 호출 실패2:", res.status);
+      return null;
+    }
+
+    const matchId = await res.json();
+    return matchId;
+  } catch (error) {
+    return null;
+  }
+}
+
+export async function fetchMatchDetails(
+  matchId: string
+): Promise<MatchDetails | null> {
+  try {
+    const baseUrl =
+      process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
+    const res = await fetch(`${baseUrl}/api/match/${matchId}`);
+
+    if (!res.ok) {
+      console.error("Riot API 호출 실패:", res.status, res.statusText);
+      return null;
+    }
+
+    const matchData = await res.json();
+
+    const teams: TeamData[] = matchData.info.teams.map((team: any) => ({
+      teamId: team.teamId,
+      win: team.win,
+      bans: team.bans.map((ban: any) => ({
+        championId: ban.championId,
+        pickTurn: ban.pickTurn,
+      })),
+      objectives: {
+        champion: team.objectives.champion,
+        baron: team.objectives.baron,
+        dragon: team.objectives.dragon,
+        tower: team.objectives.tower,
+      },
+    }));
+
+    const participants: ParticipantData[] = matchData.info.participants.map(
+      (player: any) => ({
+        summonerName: player.summonerName,
+        puuid: player.puuid,
+        teamId: player.teamId,
+        championId: player.championId,
+        championName: player.championName,
+        summonerSpells: [player.summoner1Id, player.summoner2Id], // 소환사 주문
+        kda: {
+          kills: player.kills,
+          deaths: player.deaths,
+          assists: player.assists,
+        },
+        goldEarned: player.goldEarned,
+        win: player.win,
+        totalMinionsKilled: player.totalMinionsKilled,
+      })
+    );
+
+    return { matchId, teams, participants };
+  } catch (error) {
+    console.error("match data 패칭 오류 발생:", error);
+    return null;
+  }
+}
+
 export async function fetchFullSummonerData(
   gameName: string,
   tagLine: string
@@ -162,9 +290,10 @@ export async function fetchFullSummonerData(
   if (!fullSummonerData) return null; // ❌ PUUID 기반 소환사 정보 가져오기 실패 시 중단
 
   const leagueEntries = await fetchLeagueData(fullSummonerData.id); // ✅ 리그 정보 가져오기
-
+  const matchId = await fetchMatchId(fullSummonerData.puuid);
   return {
     ...fullSummonerData, // 기존 SummonerData
-    leagueEntries, // 🔹 추가된 리그 정보
+    leagueEntries,
+    matchId, // 🔹 추가된 리그 정보
   };
 }

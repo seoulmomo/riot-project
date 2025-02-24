@@ -5,6 +5,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FullSummonerData } from "../info/lib/riot";
+import Link from "next/link";
+import { IoIosMenu } from "react-icons/io";
 
 export default function Page() {
   const [gameName, setGameName] = useState("");
@@ -15,7 +17,13 @@ export default function Page() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [gameNameTag, setGameNameTag] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
+
+  const menuItems = [
+    { name: "챔피언", to: "/champions" },
+    { name: "아이템", to: "/items" },
+  ];
 
   useEffect(() => {
     const parts = gameNameTag.split("#");
@@ -57,6 +65,34 @@ export default function Page() {
 
   return (
     <div className="container">
+      <header className="bg-white w-full shadow-sm">
+        <nav className="mx-auto px-4 py-3">
+          {/* 데스크탑 navbar */}
+          <div className="hidden md:flex gap-5">
+            {menuItems.map((menu) => (
+              <Link
+                key={menu.name}
+                href={menu.to}
+                className="text-gray-600 hover:text-gray-900"
+              >
+                {menu.name}
+              </Link>
+            ))}
+          </div>
+
+          {/* 모바일 navbar */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="md:hidden p-2"
+            aria-label="Toggle menu"
+          >
+            <IoIosMenu />
+          </button>
+
+          {/* <div className="" */}
+        </nav>
+      </header>
+
       <div className="flex flex-col items-center justify-center h-screen bg-white p-6">
         <h1 className="text-4xl font-bold m-3">My LOL</h1>
         <div className="card w-full max-w-sm p-4">
