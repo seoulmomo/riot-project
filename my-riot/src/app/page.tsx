@@ -64,7 +64,7 @@ export default function Page() {
   }
 
   return (
-    <div className="container">
+    <div className="container mx-auto">
       <header className="bg-white w-full shadow-sm">
         <nav className="mx-auto px-4 py-3">
           {/* 데스크탑 navbar */}

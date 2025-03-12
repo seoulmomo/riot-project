@@ -28,10 +28,11 @@ export default function SummonerDetailPage({
   if (!tagLine) return <p>태그 정보가 없습니다.</p>;
 
   return (
-    <div>
-      <h1>
-        {gameName}#{tagLine}님의 소환사 정보
-      </h1>
+    <div className="bg-gray-100">
+      <div className="pl-4 pr-4 pt-4 text-lg">
+        <span className="font-bold">{gameName}</span>
+        <span className="text-gray-500">#{tagLine}</span>
+      </div>
       {summonerData ? (
         <SummonerPage summonerData={summonerData} />
       ) : (

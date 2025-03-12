@@ -43,11 +43,20 @@ export interface ParticipantData {
   teamId: number;
   championId: number;
   championName: string;
-  summonerSpells: number[]; // 소환사 주문
+  summonerSpells: { summoner1Id: number; summoner2Id: number }; // 소환사 주문
   kda: {
     kills: number;
     deaths: number;
     assists: number;
+  };
+  items: {
+    item0: number;
+    item1: number;
+    item2: number;
+    item3: number;
+    item4: number;
+    item5: number;
+    item6: number;
   };
   goldEarned: number;
   win: boolean;
@@ -56,6 +65,7 @@ export interface ParticipantData {
 
 export interface MatchDetails {
   matchId: string;
+  queueId: number;
   teams: TeamData[];
   participants: ParticipantData[];
 }
@@ -237,7 +247,7 @@ export async function fetchMatchDetails(
     }
 
     const matchData = await res.json();
-
+    const queueId = matchData.info.queueId;
     const teams: TeamData[] = matchData.info.teams.map((team: any) => ({
       teamId: team.teamId,
       win: team.win,
@@ -260,11 +270,25 @@ export async function fetchMatchDetails(
         teamId: player.teamId,
         championId: player.championId,
         championName: player.championName,
-        summonerSpells: [player.summoner1Id, player.summoner2Id], // 소환사 주문
+        summonerSpells: {
+          summoner1Id: player.summoner1Id,
+          summoner2Id: player.summoner2Id,
+        },
+        // summonerSpells: [player.summoner1Id, player.summoner2Id],
+
         kda: {
           kills: player.kills,
           deaths: player.deaths,
           assists: player.assists,
+        },
+        items: {
+          item0: player.item0,
+          item1: player.item1,
+          item2: player.item2,
+          item3: player.item3,
+          item4: player.item4,
+          item5: player.item5,
+          item6: player.item6,
         },
         goldEarned: player.goldEarned,
         win: player.win,
@@ -272,7 +296,7 @@ export async function fetchMatchDetails(
       })
     );
 
-    return { matchId, teams, participants };
+    return { matchId, queueId, teams, participants };
   } catch (error) {
     console.error("match data 패칭 오류 발생:", error);
     return null;
