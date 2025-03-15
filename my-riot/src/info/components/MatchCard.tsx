@@ -100,6 +100,7 @@ const MatchCard: React.FC<MatchCardProps> = ({
 
     fetchSpellImages();
   }, [player.summonerSpells]);
+
   return (
     <MatchCardContainer $win={player.win}>
       <ChampionImage

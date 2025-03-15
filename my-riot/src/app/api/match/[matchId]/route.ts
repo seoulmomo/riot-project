@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   req: NextRequest,
-  context: { params: { matchId: string } }
+  { params }: { params: Promise<{ matchId: string }> }
 ) {
-  const { matchId } = await context.params;
+  const matchId = (await params).matchId;
   const apiKey = process.env.RIOT_API_KEY;
   const region = "asia";
 
@@ -44,7 +44,6 @@ export async function GET(
     }
 
     const matchData = await res.json();
-
     return NextResponse.json(matchData);
   } catch (error) {
     console.error("❌ 서버 오류 발생:", error);

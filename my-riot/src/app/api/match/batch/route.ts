@@ -5,7 +5,6 @@ import { fetchMatchDetails } from "@/info/lib/riot";
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const matchIds = searchParams.getAll("matchId");
-
   if (matchIds.length === 0)
     return NextResponse.json(
       { error: "❌ matchId가 필요합니다." },
@@ -14,7 +13,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const matchDataMap: { [key: string]: any } = {};
-    
+
     await Promise.all(
       matchIds.map(async (matchId) => {
         const matchData = await fetchMatchDetails(matchId);
