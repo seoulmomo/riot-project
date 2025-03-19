@@ -4,7 +4,6 @@ export async function GET(req: NextRequest, res: NextResponse) {
   const { searchParams } = new URL(req.url);
   const puuid = searchParams.get("puuid");
   const start = searchParams.get("start") || 0;
-  // const start = parseInt(searchParams.get("start") ?? "0", 10);
   const apiKey = process.env.RIOT_API_KEY;
 
   if (!apiKey) {
@@ -20,8 +19,8 @@ export async function GET(req: NextRequest, res: NextResponse) {
       { status: 400 }
     );
   }
-
-  const matchIdUrl = `https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=${start}&count=10`;
+  const count = 10;
+  const matchIdUrl = `https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=${start}&count=${count}`;
 
   try {
     const response = await fetch(matchIdUrl, {
