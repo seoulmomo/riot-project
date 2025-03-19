@@ -104,7 +104,7 @@ const MatchCard: React.FC<MatchCardProps> = ({
   return (
     <MatchCardContainer $win={player.win}>
       <ChampionImage
-        src={championImg[player.championName]}
+        src={championImg[player.championName] || undefined}
         alt={player.championName}
       />
 
@@ -112,8 +112,8 @@ const MatchCard: React.FC<MatchCardProps> = ({
         ""
       ) : (
         <div className="flex flex-col gap-1">
-          <SpellImage src={spell1Img} alt="Summoner Spell 1" />
-          <SpellImage src={spell2Img} alt="Summoner Spell 2" />
+          <SpellImage src={spell1Img || undefined} alt="Summoner Spell 1" />
+          <SpellImage src={spell2Img || undefined} alt="Summoner Spell 2" />
         </div>
       )}
 
@@ -137,7 +137,7 @@ const MatchCard: React.FC<MatchCardProps> = ({
               itemId !== 0 && (
                 <ItemImage
                   key={i}
-                  src={itemImg[itemId]}
+                  src={itemImg[itemId] || undefined}
                   alt={`아이템 ${itemId}`}
                 />
               )

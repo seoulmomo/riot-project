@@ -5,6 +5,7 @@ import styled from "styled-components";
 const ChartContainer = styled.div`
   display: flex;
   align-items: center;
+  justify-content: center;
   font-family: "Arial", sans-serif;
   gap: 10px;
 `;
