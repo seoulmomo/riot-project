@@ -1,8 +1,9 @@
 //app/summoner/[gameName]
 "use client"; // ✅ 클라이언트 컴포넌트 설정
 import { useEffect, useState, use } from "react";
-import SummonerPage from "@/info/components/SummonerPage";
+import SummonerPage from "@/components/SummonerPage";
 import { FullSummonerData } from "@/info/lib/riot";
+import { Header } from "@/components/Header";
 
 export default function SummonerDetailPage({
   params: paramsPromise,
@@ -28,16 +29,19 @@ export default function SummonerDetailPage({
   if (!tagLine) return <p>태그 정보가 없습니다.</p>;
 
   return (
-    <div className="bg-gray-100">
-      <div className="pl-4 pr-4 pt-4 text-lg">
-        <span className="font-bold">{gameName}</span>
-        <span className="text-gray-500">#{tagLine}</span>
+    <>
+      <Header />
+      <div className="bg-gray-100 pb-5">
+        <div className="pl-4 pr-4 pt-4 text-lg">
+          <span className="font-bold">{gameName}</span>
+          <span className="text-gray-500">#{tagLine}</span>
+        </div>
+        {summonerData ? (
+          <SummonerPage summonerData={summonerData} />
+        ) : (
+          <p>데이터 로딩 중...</p>
+        )}
       </div>
-      {summonerData ? (
-        <SummonerPage summonerData={summonerData} />
-      ) : (
-        <p>데이터 로딩 중...</p>
-      )}
-    </div>
+    </>
   );
 }

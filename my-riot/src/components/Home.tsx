@@ -2,11 +2,11 @@
 // 처음 화면
 "use client";
 
-import { Header } from "@/components/Header";
 import { KeyboardEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function page() {
+
+export default function Home() {
   const [gameName, setGameName] = useState("");
   const [tagLine, setTagLine] = useState("");
   const [loading, setLoading] = useState(false);
@@ -14,6 +14,8 @@ export default function page() {
   const [gameNameTag, setGameNameTag] = useState("");
 
   const router = useRouter();
+
+
 
   useEffect(() => {
     const parts = gameNameTag.split("#");
@@ -60,40 +62,39 @@ export default function page() {
   }
 
   return (
-    <>
-      <Header />
-      <div className="container mx-auto">
-        <div className="flex flex-col items-center justify-center h-screen bg-white p-6">
-          <h1 className="text-4xl font-bold m-3">My LOL</h1>
-          <div className="card w-full max-w-sm p-4">
-            <div className="card-body flex flex-row gap-2 items-center">
-              <input
-                type="text"
-                placeholder="게임 닉네임 + #태그"
-                value={gameNameTag}
-                onChange={(e) => {
-                  setGameNameTag(e.target.value);
-                  setError(null); // 입력 변경 시 에러 초기화
-                }}
-                onKeyDown={activeEnter}
-                className="input input-bordered flex-grow border-black"
-              />
-              <button
-                className="btn btn-outline border-black bg-white text-black"
-                onClick={handleSearch}
-              >
-                {loading ? "검색 중..." : "검색"}
-              </button>
-            </div>
-            {!error ? (
-              <p className="h-5"></p>
-            ) : (
-              <p className="text-red-500 text-sm pl-8">{error}</p>
-            )}
-            {/* {error && <p className="text-red-500 text-sm pl-8">{error}</p>} */}
+    <div className="container mx-auto">
+      
+
+      <div className="flex flex-col items-center justify-center h-screen bg-white p-6">
+        <h1 className="text-4xl font-bold m-3">My LOL</h1>
+        <div className="card w-full max-w-sm p-4">
+          <div className="card-body flex flex-row gap-2 items-center">
+            <input
+              type="text"
+              placeholder="게임 닉네임 + #태그"
+              value={gameNameTag}
+              onChange={(e) => {
+                setGameNameTag(e.target.value);
+                setError(null); // 입력 변경 시 에러 초기화
+              }}
+              onKeyDown={activeEnter}
+              className="input input-bordered flex-grow border-black"
+            />
+            <button
+              className="btn btn-outline border-black bg-white text-black"
+              onClick={handleSearch}
+            >
+              {loading ? "검색 중..." : "검색"}
+            </button>
           </div>
+          {!error ? (
+            <p className="h-5"></p>
+          ) : (
+            <p className="text-red-500 text-sm pl-8">{error}</p>
+          )}
+          {/* {error && <p className="text-red-500 text-sm pl-8">{error}</p>} */}
         </div>
       </div>
-    </>
+    </div>
   );
 }
