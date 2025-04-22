@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { getSummonerSpellImage } from "@/app/utils/api";
+import { QUEUE_INFO } from "@/app/utils/QueueType";
 
 interface Player {
   championName: string;
@@ -28,53 +29,10 @@ interface MatchCardProps {
   queueId: number;
 }
 
-const MatchCardContainer = styled.div<{ $win: boolean }>`
-  padding: 16px;
-  margin: 8px;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  background-color: ${({ $win }) => ($win ? "#c3e0f7" : "#f7c3c3")};
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  @media (min-width: 1080px) {
-    width: 740px;
-  }
-`;
-
-const ChampionImage = styled.img`
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-`;
-
-const MatchInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const Stats = styled.p`
-  font-size: 0.9rem;
-`;
-
-const Items = styled.p`
-  font-size: 0.9rem;
-  display: flex;
-  align-items: center;
-  gap: 4px; /* 아이템 간격 조절 */
-  flex-wrap: wrap; /* 너무 많을 경우 줄바꿈 */
-`;
-
-const ItemImage = styled.img`
-  width: 22px;
-  heigh: 22px;
-  border-radius: 0.25rem;
-`;
-
-const SpellImage = styled.img`
-  width: 24px;
-  height: 24px;
-  border-radius: 4px;
+// 📌 ✅ 승/패에 따라 배경색 변경 (Styled-components 사용)
+const MatchCardWrapper = styled.div<{ $isWin: boolean }>`
+  background-color: ${(props) =>
+    props.$isWin ? "#d1e7fd" : "#fdd1d1"}; // 승리: 파란색, 패배: 빨간색
 `;
 
 const MatchCard: React.FC<MatchCardProps> = ({
@@ -102,50 +60,72 @@ const MatchCard: React.FC<MatchCardProps> = ({
   }, [player.summonerSpells]);
 
   return (
-    <MatchCardContainer $win={player.win}>
-      <ChampionImage
-        src={championImg[player.championName] || undefined}
-        alt={player.championName}
-      />
+    <MatchCardWrapper
+      $isWin={player.win}
+      className="p-4 m-2 shadow-md rounded-lg lg:flex items-center gap-4"
+    >
+      {/* 큐 타입 */}
+      <div className="text-xs font-bold block lg:w-20 mb-1.5 lg:mb-0">
+        {QUEUE_INFO[queueId] || "알 수 없는 큐"}
+      </div>
+      <div className="flex gap-4 items-center">
+        {/* 챔피언 이미지 */}
+        <img
+          src={championImg[player.championName] || undefined}
+          alt={player.championName}
+          className="w-16 h-16 rounded-full"
+        />
 
-      {queueId === 1700 ? (
-        ""
-      ) : (
-        <div className="flex flex-col gap-1">
-          <SpellImage src={spell1Img || undefined} alt="Summoner Spell 1" />
-          <SpellImage src={spell2Img || undefined} alt="Summoner Spell 2" />
+        {/* 소환사 스펠 (아레나 모드는 제외) */}
+        {queueId !== 1700 && (
+          <div className="flex flex-col gap-1">
+            <img
+              src={spell1Img || undefined}
+              alt="Summoner Spell 1"
+              className="w-6 h-6 rounded"
+            />
+            <img
+              src={spell2Img || undefined}
+              alt="Summoner Spell 2"
+              className="w-6 h-6 rounded"
+            />
+          </div>
+        )}
+
+        {/* 매치 정보 */}
+        <div className="flex flex-col">
+          <p className="text-sm">
+            {player.kda.kills} / {player.kda.deaths} / {player.kda.assists} (
+            {(
+              (player.kda.kills + player.kda.assists) /
+              Math.max(1, player.kda.deaths)
+            ).toFixed(2)}{" "}
+            KDA)
+          </p>
+          <p className="text-sm">
+            CS: {player.totalMinionsKilled} | 골드: {player.goldEarned}
+          </p>
+
+          {/* 아이템 이미지 */}
+          <div className="flex items-center gap-1 flex-wrap">
+            {[0, 1, 2, 3, 4, 5, 6].map((i) => {
+              const itemId =
+                player.items[`item${i}` as keyof typeof player.items];
+              return (
+                itemId !== 0 && (
+                  <img
+                    key={i}
+                    src={itemImg[itemId] || undefined}
+                    alt={`아이템 ${itemId}`}
+                    className="w-6 h-6 rounded-md"
+                  />
+                )
+              );
+            })}
+          </div>
         </div>
-      )}
-
-      <MatchInfo>
-        <Stats>
-          {player.kda.kills} / {player.kda.deaths} / {player.kda.assists} (
-          {(
-            (player.kda.kills + player.kda.assists) /
-            Math.max(1, player.kda.deaths)
-          ).toFixed(2)}{" "}
-          KDA)
-        </Stats>
-        <Stats>
-          CS: {player.totalMinionsKilled} | 골드: {player.goldEarned}
-        </Stats>
-        <Items>
-          {[0, 1, 2, 3, 4, 5, 6].map((i) => {
-            const itemId =
-              player.items[`item${i}` as keyof typeof player.items];
-            return (
-              itemId !== 0 && (
-                <ItemImage
-                  key={i}
-                  src={itemImg[itemId] || undefined}
-                  alt={`아이템 ${itemId}`}
-                />
-              )
-            );
-          })}
-        </Items>
-      </MatchInfo>
-    </MatchCardContainer>
+      </div>
+    </MatchCardWrapper>
   );
 };
 

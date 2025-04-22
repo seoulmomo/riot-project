@@ -1,4 +1,3 @@
-import styled from "styled-components";
 import SoloRankWinRatePieChart from "./SoloRankWinRatePieChart";
 import { CHAMPION_KR } from "@/app/utils/ChampionName";
 
@@ -20,112 +19,6 @@ interface LeagueInfoProps {
   }>;
 }
 
-const LeagueContainer = styled.div`
-  width: 100%;
-  height: 500px;
-  background-color: white;
-  border-radius: 8px;
-  margin-top: 24px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 16px;
-  @media (min-width: 1080px) {
-    width: 332px;
-    flex-direction: column;
-    align-items: center;
-  }
-  .tierChartMobileUi {
-    margin-top: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    justify-content: center;
-
-    @media (min-width: 768px) and (max-width: 1079px) {
-      display: block;
-      flex-direction: row;
-    }
-  }
-`;
-
-const SoloRankText = styled.div`
-  display: flex;
-  align-items: center;
-  width: 100%;
-  height: 36px;
-  border-bottom: 0.5px solid #edeef1;
-`;
-
-const Text = styled.div`
-  font-size: 0.875rem;
-  color: #1f2937;
-  line-height: 36px;
-  padding-left: 16px;
-  padding-right: 16px;
-`;
-
-const RankTextContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-`;
-
-const RankText = styled.span`
-  font-size: 1.25rem;
-  font-weight: bold;
-`;
-
-const RankPoint = styled.span`
-  font-size: 0.75rem;
-  color: #6b7280;
-`;
-
-const TierInfo = styled.div`
-  // width: 100%;
-  display: flex;
-  justify-content: center;
-  gap: 16px;
-  margin-bottom: 16px;
-
-  @media (min-width: 1080px) {
-    align-items: center;
-  }
-`;
-
-const ChampionKDAContainer = styled.div`
-  margin-top: 10px;
-  width: 100%;
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  th {
-    padding: 4px;
-    font-size: 11px;
-    background-color: #e0eeee;
-  }
-  td {
-    text-align: center;
-  }
-  img {
-    // margin: 0 auto;
-    width: 22px;
-    heigh: 22px;
-  }
-  .tbodyChampionNameImg {
-    display: flex;
-    align-items: center;
-    padding-left: 10px;
-    gap: 10px;
-    span {
-      font-size: 12px;
-    }
-  }
-`;
-
-// 📌 **함수형 컴포넌트 변환**
 const LeagueInfo: React.FC<LeagueInfoProps> = ({
   tierImgUrl,
   soloRankTier,
@@ -138,45 +31,55 @@ const LeagueInfo: React.FC<LeagueInfoProps> = ({
     playerChampion.sort((a, b) => b.count - a.count);
   }
   return (
-    <LeagueContainer>
-      <SoloRankText>
-        <Text>솔로 랭크</Text>
-      </SoloRankText>
-      <div className="tierChartMobileUi">
-        <TierInfo>
+    <div className="w-full lg:h-[500px] bg-white rounded-lg mt-6 pb-2 flex flex-col items-center justify-start gap-4 lg:w-[332px]">
+      <div className="flex items-center w-full h-[36px] border-b-[0.5px] border-b-[#edeef1]">
+        <div className="text-sm text-gray-800 leading-[36px] px-4">
+          솔로 랭크
+        </div>
+      </div>
+      <div className="mt-[10px] flex flex-col gap-5 justify-center md:flex-row lg:flex-col">
+        <div className="flex justify-center gap-4 mb-4 lg:items-center">
           <img
             src={tierImgUrl || undefined}
             alt={soloRankTier}
             width={80}
             height={80}
           />
-          <RankTextContainer>
-            <RankText>{soloRankTier}</RankText>
-            <RankPoint>{soloRankPoint} LP</RankPoint>
-          </RankTextContainer>
-        </TierInfo>
+          <div className="flex flex-col justify-center">
+            <span className="text-xl font-bold">{soloRankTier}</span>
+            <span className="text-xs text-gray-500">{soloRankPoint} LP</span>
+          </div>
+        </div>
         <SoloRankWinRatePieChart wins={soloRankWins} losses={soloRankLoses} />
       </div>
-      <ChampionKDAContainer>
-        <table>
+      <div className="mt-[10px] w-full">
+        <table className="w-full border-collapse">
           <thead>
             <tr>
-              <th>챔피언</th>
-              <th>게임 수</th>
-              <th>승률</th>
-              <th>KDA</th>
+              <th className="p-1 text-[11px] bg-[#e0eeee]">챔피언</th>
+              <th className="p-1 text-[11px] bg-[#e0eeee]">게임 수</th>
+              <th className="p-1 text-[11px] bg-[#e0eeee]">승률</th>
+              <th className="p-1 text-[11px] bg-[#e0eeee]">KDA</th>
             </tr>
           </thead>
           <tbody>
             {playerChampion.slice(0, 5).map((champion, index) => (
               <tr key={index}>
-                <td className="tbodyChampionNameImg">
-                  <img src={champion.imageUrl} alt={champion.championName} />
-                  <span>{CHAMPION_KR[champion.championName]}</span>
+                <td className="flex items-center pl-[10px] gap-[10px]">
+                  <img
+                    src={champion.imageUrl}
+                    alt={champion.championName}
+                    className="w-[22px] h-[22px]"
+                  />
+                  <span className="text-[12px]">
+                    {CHAMPION_KR[champion.championName]}
+                  </span>
                 </td>
-                <td>{champion.count}</td>
-                <td>{Math.floor(champion.win / champion.count) / 100}</td>
-                <td>
+                <td className="text-center">{champion.count}</td>
+                <td className="text-center">
+                  {Math.floor(champion.win / champion.count) / 100}
+                </td>
+                <td className="text-center">
                   {champion.deaths !== 0
                     ? Math.floor(
                         (champion.kills + champion.assists) / champion.deaths
@@ -187,8 +90,8 @@ const LeagueInfo: React.FC<LeagueInfoProps> = ({
             ))}
           </tbody>
         </table>
-      </ChampionKDAContainer>
-    </LeagueContainer>
+      </div>
+    </div>
   );
 };
 

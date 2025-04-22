@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { FullSummonerData, fetchMatchId } from "../info/lib/riot";
@@ -44,6 +46,10 @@ const Container = styled.div`
 `;
 
 const MatchContainer = styled.div`
+  width: 100%;
+  @media (min-width: 1080px) {
+    flex: 1;
+  }
   margin-top: 16px;
 `;
 
